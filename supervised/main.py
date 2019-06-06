@@ -301,34 +301,34 @@ def train(train_loader, model, optimizer, epoch, args, log):
 
 
 def validate(val_loader, model, log):
-  losses = AverageMeter()
-  top1 = AverageMeter()
-  top5 = AverageMeter()
+    losses = AverageMeter()
+    top1 = AverageMeter()
+    top5 = AverageMeter()
 
-  # switch to evaluate mode
-  model.eval()
+    # switch to evaluate mode
+    model.eval()
 
-  for i, (input, target) in enumerate(val_loader):
-    if args.use_cuda:
-      target = target.cuda(async=True)
-      input = input.cuda()
-    with torch.no_grad():
-        input_var = Variable(input)
-        target_var = Variable(target)
+    for i, (input, target) in enumerate(val_loader):
+        if args.use_cuda:
+            target = target.cuda()
+            input = input.cuda()
+            with torch.no_grad():
+                input_var = Variable(input)
+                target_var = Variable(target)
 
-    # compute output
-    output = model(input_var)
-    loss = criterion(output, target_var)
+            # compute output
+            output = model(input_var)
+            loss = criterion(output, target_var)
 
-    # measure accuracy and record loss
-    prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
-    losses.update(loss.item(), input.size(0))
-    top1.update(prec1.item(), input.size(0))
-    top5.update(prec5.item(), input.size(0))
+            # measure accuracy and record loss
+            prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
+            losses.update(loss.item(), input.size(0))
+            top1.update(prec1.item(), input.size(0))
+            top5.update(prec5.item(), input.size(0))
 
-  print_log('  **Test** Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f} Error@1 {error1:.3f} Loss: {losses.avg:.3f} '.format(top1=top1, top5=top5, error1=100-top1.avg, losses=losses), log)
+    print_log('  **Test** Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f} Error@1 {error1:.3f} Loss: {losses.avg:.3f} '.format(top1=top1, top5=top5, error1=100-top1.avg, losses=losses), log)
 
-  return top1.avg, losses.avg
+    return top1.avg, losses.avg
 
 best_acc = 0
 def main():
